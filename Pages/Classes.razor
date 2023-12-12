@@ -1,0 +1,68 @@
+﻿@using Assignment.DTO;
+@using Assignment.Results;
+@using Microsoft.EntityFrameworkCore
+@using Assignment.Model;
+
+@page "/"
+<h3>Classes</h3>
+<table>
+    <thead>
+        <tr>
+            <th>
+                sid (student id)
+            </th>
+            <th>
+                major
+            </th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (ClassWithTargetStudents ClassWithTargetStudent in GetClassesWithSpecifcStudents())
+        {
+            <tr>
+                <td>
+                    @ClassWithTargetStudent.ClassName
+                </td>
+                <td>
+                    @ClassWithTargetStudent.RoomNumbers
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+
+@code {
+
+    public AppDbContext Context = new AppDbContext(new DbContextOptions<AppDbContext>());
+
+   
+
+     
+    public List<ClassWithTargetStudents> GetClassesWithSpecifcStudents()
+    {
+
+        var ClassWith100Students = Context.Class
+            .Include(x => x.Enrollments)
+            .Where(w => w.Enrollments.Count > 100)
+            .Select(c => new ClassWithTargetStudents
+                {
+                    ClassName = c.name,
+                    RoomNumbers = c.room_number
+                })
+            .ToList();
+
+
+        return ClassWith100Students;
+  
+    }
+
+
+
+  
+     
+}

@@ -1,0 +1,65 @@
+﻿@using Assignment.Model;
+@using Microsoft.EntityFrameworkCore;
+<h3>StudentsQ1</h3>
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                sid (student id)
+            </th>
+            <th>
+                major
+            </th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Student student in GetStudents())
+        {
+            <tr>
+                <td>
+                    @student.sid
+                </td>
+                <td>
+                    @student.major
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@code {
+
+
+    public AppDbContext Context = new AppDbContext(new DbContextOptions<AppDbContext>());
+
+
+    public List<Student> GetStudents()
+    {
+        var studentsList = Context.Enrollment
+         .Include(s => s.Student)
+         .Include(e => e.Class)
+         .ThenInclude(c => c.Faculty)
+
+         .Where(s => s.Class.Faculty.deptid != 22)
+
+         .Select(s => new Student
+             {
+                 sid = s.Student.sid,
+                 major = s.Student.major
+             })
+         .ToList();
+
+        return studentsList;
+    }
+
+
+
+}
+

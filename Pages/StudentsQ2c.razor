@@ -1,0 +1,47 @@
+﻿@using Assignment.DTO;
+@using Microsoft.EntityFrameworkCore;
+<h3>StudentsQ2c</h3>
+<table>
+    <thead>
+        <tr>
+            <th>
+                sid (student id)
+            </th>
+            <th>
+                major
+            </th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (StudentWithCourseCount StudentWithCourseCount in GetStudentWithCourseCount())
+        {
+            <tr>
+                <td>
+                    @StudentWithCourseCount.StudentName
+                </td>
+                <td>
+                    @StudentWithCourseCount.NoOfEnrollment
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@code {
+    public AppDbContext Context = new AppDbContext(new DbContextOptions<AppDbContext>());
+    public List<StudentWithCourseCount> GetStudentWithCourseCount()
+    {
+        var studentsList = Context.Student
+       .Include(x => x.Enrollments)
+       .Where(x => x.Enrollments.Count > 2)
+
+       .Select(x => new StudentWithCourseCount {StudentName= x.sname,NoOfEnrollment= x.Enrollments.Count })
+       .ToList();
+
+        return studentsList;
+    }
+}

@@ -1,0 +1,42 @@
+﻿@using Assignment.Model;
+@using Microsoft.EntityFrameworkCore;
+<h3>CsStudents</h3>
+<table>
+    <thead>
+        <tr>
+            <th>
+                sname (student Name)
+            </th>
+
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Student student in ListOfCsStudents())
+        {
+            <tr>
+                <td>
+                    @student.sname
+                </td>
+
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+@code {
+    public AppDbContext Context = new AppDbContext(new DbContextOptions<AppDbContext>());
+    public List<Student> ListOfCsStudents()
+    {
+        var studentsList = Context.Enrollment
+      .Include(x => x.Class)
+      .ThenInclude(x => x.Faculty)
+      .Include(x => x.Student)
+      .Where(x => x.Class.Faculty.fname == "CS")
+      .Select(x => new Student { sname = x.Student.sname })
+      .ToList();
+        return studentsList;
+    }
+}

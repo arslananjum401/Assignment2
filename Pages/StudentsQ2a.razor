@@ -1,0 +1,44 @@
+﻿@using Assignment.Model;
+@using Microsoft.EntityFrameworkCore;
+<h3>StudentsQ2a</h3>
+<table>
+    <thead>
+        <tr>
+            <th>
+                sname (student Name)
+            </th>
+             
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Student student in StudentsWithNoMarks())
+        {
+            <tr>
+                <td>
+                    @student.sname
+                </td>
+                 
+
+            </tr>
+        }
+
+    </tbody>
+</table>
+@code {
+    public AppDbContext Context = new AppDbContext(new DbContextOptions<AppDbContext>());
+    public List<Student> StudentsWithNoMarks()
+    {
+        var studentsList = Context.Student
+       .Include(x => x.Enrollments)
+       .Where(x => x.Enrollments != null && x.standing == null)
+       .Select(x => new Student
+       {
+           sname = x.sname
+       })
+       .ToList();
+
+        return studentsList;
+    }
+}
